@@ -1,0 +1,35 @@
+<section class="hero is-link">
+  <div class="hero-body">
+    <div class="container">
+      <p class="title">
+        Список доступных товаров
+      </p>
+      <p class="subtitle">
+        У нас уже есть товаров - <%= @products.length %>.
+      </p>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container px-4 px-md-3">
+    <ul class="menu">
+      <% @products.each do |product| %>
+        <li>
+          <div class="tile is-parent is-12 is-fullwidth box">
+            <a href="/show/<%= product.id %>">
+              <article class="tile is-child is-fullwidth">
+                <p class="title"><%= product.name %></p>
+                <p class="subtitle has-text-success"><%= product.price %> руб.</p>
+                <div class="content">
+                  <p>
+                    <%= product.main %>
+                  </p>
+                </div>
+              </article>
+            </a>
+          </div>
+        </li>&nbsp;
+      <% end %>
+    </ul>
+  </div>
+</section>

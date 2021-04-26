@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Shop</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+  <body>
+    <nav class="navbar is-light" role="navigation" aria-label="main navigation">
+      <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-brand">
+          <a class="navbar-item">
+            Магазин
+          </a>
+        </div>
+        <div class="navbar-start">
+          <% if @user %>
+            <a class="navbar-item">
+              Пользователь <%= @user["name"] %>
+            </a>
+            <a class="navbar-item" href="/">
+              Список товаров
+            </a>
+            <a class="navbar-item" href="/add">
+              Добавить товар
+            </a>
+          <% else %>
+            <a class="navbar-item" href="/">
+              Список товаров
+            </a>
+          <% end %>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <div class="buttons">
+              <% if @user %>
+                <a class="button is-danger" href="/logout">
+                  Выйти
+                </a>
+              <% else %>
+                <a class="button is-primary" href="/login">
+                  Войти
+                </a>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <%= yield %>
+  </body>
+</html>

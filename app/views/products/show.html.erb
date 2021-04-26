@@ -1,0 +1,277 @@
+<script>
+    function createAnswer(answer) {
+      return `
+      <article class="media">
+        <figure class="media-left">
+          <p class="image is-48x48">
+            <img src="https://bulma.io/images/placeholders/96x96.png">
+          </p>
+        </figure>
+        <div class="media-content">
+          <div class="content">
+            <p>
+              <strong><%= @user["name"] %></strong>
+              <br>
+                <p>
+      ` + answer + `
+                </p>
+              <br>
+            </p>
+          </div>
+        </div>
+      </article>
+      `
+    }
+
+    function sendQuesstion(id) {
+        let quesstion = document.getElementById("quesstion").value;
+        if (quesstion == "") {
+            return;
+        }
+
+        let url = location.protocol + "//" + location.host + "/add_quesstion.json";
+        let param_str = "?quesstion=" + quesstion + "&id=" + id;
+        let http_request = new XMLHttpRequest();
+    
+        http_request.open("GET", url + param_str);
+
+        http_request.onreadystatechange = function () {
+            let done = 4, ok = 200;
+            if (http_request.readyState == done && http_request.status == ok) {
+                data = JSON.parse(http_request.responseText);
+                if (data.result) {
+                    let result = document.getElementById("result");
+                    result.innerText = "Ваш вопрос успешно добавлен"
+                    let btn = document.getElementById("result");
+                    btn.setAttribute("disabled", "disabled");
+                    let input = document.getElementById("quesstion");
+                    input.value = "";
+                } else {
+                    let result = document.getElementById("result");
+                    result.innerText = "Произошла ошибка"
+                }
+            }
+            };
+
+        http_request.send(null);
+    }
+
+    function sendAnswer(id) {
+        let answer = document.getElementById("answer№" + id).value;
+        if (answer == "") {
+            return;
+        }
+
+        let url = location.protocol + "//" + location.host + "/add_answer.json";
+        let param_str = "?answer=" + answer + "&id=" + id;
+        let http_request = new XMLHttpRequest();
+    
+        http_request.open("GET", url + param_str);
+
+        http_request.onreadystatechange = function () {
+            let done = 4, ok = 200;
+            if (http_request.readyState == done && http_request.status == ok) {
+                data = JSON.parse(http_request.responseText);
+                if (data.result) {
+                    let questionForm = document.getElementById("question-form" + id);
+                    questionForm.parentNode.removeChild(questionForm);
+
+                    let answerNode = createAnswer(answer);
+                    let questionID = "#question-title" + id;
+                    $(questionID).append(answerNode);
+                }
+            }
+        };
+
+        http_request.send(null);
+    }
+</script>
+
+<section class="hero is-link">
+  <div class="hero-body">
+    <div class="container">
+      <p class="title">
+        <%= @product.name %>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="content">
+    <div class="container">
+      <nav class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <h1>
+              Продавец: <%= @seller.name %>
+            </h1>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <h1 class="has-text-success">
+              <%= @product.price %> руб.
+            </h1>
+          </div>
+        </div>
+      </nav>
+      <p class="box">
+        <%= @product.main %>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="content">
+    <div class="container">
+      <% if @user %>
+        <% unless @user["id"] == @seller.id %>
+          <h1>
+            Общение с продавцом
+          </h1>
+          <p>По телефону <%= @seller.phone %></p>
+          <p id="result"></p>
+          <article class="media">
+            <div class="media-content">
+              <div class="field">
+                <p class="control">
+                  <textarea id="quesstion" class="textarea" placeholder="Ваш вопрос"></textarea>
+                </p>
+              </div>
+              <nav class="level">
+                <div class="level-left">
+                  <div class="level-item">
+                    <button onclick="sendQuesstion(<%= @product.id %>)" class="button is-info">
+                      Написать письмо
+                    </button>
+                  </div>
+                </div>
+              </nav>
+            </div>
+          </article>
+          <h1>Ваши разговоры</h1>
+          <% @user_conversations.each do |conversation| %>
+            <article class="media">
+              <figure class="media-left">
+                <p class="image is-64x64">
+                  <img src="https://bulma.io/images/placeholders/128x128.png">
+                </p>
+              </figure>
+              <div class="media-content">
+                <div class="content">
+                  <p>
+                    <strong><%= @users.find_by(id: conversation.user_id).name %></strong>
+                    <br>
+                    <%= conversation.quesstion %>
+                    <br>
+                  </p>
+                </div>
+                <article class="media">
+                  <figure class="media-left">
+                    <p class="image is-48x48">
+                      <img src="https://bulma.io/images/placeholders/96x96.png">
+                    </p>
+                  </figure>
+                  <div class="media-content">
+                    <div class="content">
+                      <p>
+                        <strong><%= @seller.name %></strong>
+                        <br>
+                      <p id="td№<%= conversation.id %>">
+                        <%= conversation.answer %>
+                      </p>
+                      <br>
+                      </p>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </article>
+          <% end %>
+        <% else %>
+          <h1>
+            Общение с клиентами
+          </h1>
+          <% @conversations.each do |conversation| %>
+            <% unless conversation.answer == "" %>
+              <article class="media">
+                <figure class="media-left">
+                  <p class="image is-64x64">
+                    <img src="https://bulma.io/images/placeholders/128x128.png">
+                  </p>
+                </figure>
+                <div class="media-content">
+                  <div class="content">
+                    <p>
+                      <strong><%= @users.find_by(id: conversation.user_id).name %></strong>
+                      <br>
+                      <%= conversation.quesstion %>
+                      <br>
+                    </p>
+                  </div>
+                  <article class="media">
+                    <figure class="media-left">
+                      <p class="image is-48x48">
+                        <img src="https://bulma.io/images/placeholders/96x96.png">
+                      </p>
+                    </figure>
+                    <div class="media-content">
+                      <div class="content">
+                        <p>
+                          <strong><%= @user["name"] %></strong>
+                          <br>
+                            <p id="td№<%= conversation.id %>">
+                              <%= conversation.answer %>
+                            </p>
+                          <br>
+                        </p>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </article>
+            <% else %>
+              <article class="media">
+                <figure class="media-left">
+                  <p class="image is-64x64">
+                    <img src="https://bulma.io/images/placeholders/128x128.png">
+                  </p>
+                </figure>
+                <div id="question-title<%= conversation.id %>" class="media-content">
+                  <div class="content">
+                    <p>
+                      <strong><%= @users.find_by(id: conversation.user_id).name %></strong>
+                      <br>
+                        <%= conversation.quesstion %>
+                      <br>
+                    </p>
+                  </div>
+                </div>
+                <article id="question-form<%= conversation.id %>" class="media">
+                  <div class="field">
+                    <p class="control">
+                      <textarea id="answer№<%= conversation.id %>" class="textarea" placeholder="Ваш ответ"></textarea>
+                    </p>
+                  </div>
+                  <nav class="level">
+                    <div class="level-right">
+                      <div class="level-item">
+                        <button onclick="sendAnswer(<%= conversation.id %>)" class="button is-info">
+                          Отправить
+                        </button>
+                      </div>
+                    </div>
+                  </nav>
+                </article>
+              </article>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% else %>
+        <p style="font-size: 15pt;"><a href="/login">Войдите</a>, чтобы написать или позвонить продавцу!</p>
+      <% end %>
+    </div>
+  </div>
+</section>

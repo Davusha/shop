@@ -1,0 +1,33 @@
+<section class="section">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="tile is-parent">
+          <article class="tile is-child notification is-white">
+            <%= simple_form_for :user, method: "post", url: create_path, html: { multipart: :true, class: "form-horizontal" } do |f| %>
+              <%= f.input :name, label: "Имя", html: { multipart: :true, class: "input" } %>
+              <%= f.input :phone, label: "Телефон", html: { multipart: :true, class: "input" } %>
+              <%= f.input :email, label: "Почта", html: { multipart: :true, class: "input" } %>
+              <%= f.input :password, label: "Пароль" %>
+              <%= f.input :password_confirmation, label: "Повторите пароль" %>
+              <%= f.button :submit, "Зарегистрироваться", class: "button is-success" %>
+              <span><%= @error %></span>
+            <% end %>
+          </article>
+        </div>
+      </div>
+      <div class="column">
+        <div class="tile is-parent">
+          <article class="tile is-child notification is-light">
+            <p class="title">
+              Уже зарегистрированы?
+            </p>
+            <a class="button is-success" href="/login">
+              Войти
+            </a>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

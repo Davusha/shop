@@ -1,0 +1,11 @@
+<section class="section">
+  <div class="container">
+    <%= simple_form_for :product, method: "post", url: product_path, html: { multipart: :true, class: "form-horizontal" } do |f| %>
+      <%= f.input :name, label: "Название", html: { multipart: :true, class: "input" } %>
+      <%= f.input :main, label: "Описание", as: :text %>
+      <%= f.input :price, label: "Цена" %>
+      <%= f.button :submit, "Добавить", class: "button is-success" %>
+      <span><%= @error %></span>
+    <% end %>
+  </div>
+</section>
